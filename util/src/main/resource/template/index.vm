@@ -1,0 +1,201 @@
+<%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@include file="../../../common/header.jsp"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>后台管理</title>
+<link href="${base}/style/css/admin.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="${base}/style/js/jquery/jquery-2.0.0.js"></script>
+<script type="text/javascript" src="${base}/style/js/base.js"></script>
+<script src="${base}/style/artDialog/artDialog.source.js?skin=aero"></script>
+<script src="${base}/style/artDialog/plugins/iframeTools.js"></script>
+<script type="text/javascript">
+
+
+	function toAdd(){
+		window.location.href = "${base}/manage/${modelname}/roleadd.htm" ;
+	}
+
+	function toEdit(id){
+		window.location.href = "${base}/manage/${modelname}/toEdit.htm?id="+id  ;
+	}
+
+	function viewRole(srId){
+		window.location.href = "${base}/sys/role/roleview/"+srId+".htm" ;
+	}
+	
+	function deleteSelect() {
+		var boxs = document.getElementsByName("ids");
+		var b = false  ;
+	    if(boxs.length >0 ) {
+	    	for(var i=0;i<boxs.length;i++) {
+	    		if(boxs[i].checked) {
+	    			b = true ;
+	    		}
+	    	}
+	    	if(!b) {
+	    		art.dialog.alert("请选择需要删除的项！") ;
+	    		return ;
+	    	}
+	    	art.dialog({
+			    title: '提示！',
+			    resize: false,
+			    content: '点击确定后将执行批量删除角色操作！',
+			    width: '20em',
+			    button: [{
+			    	name:'确定',
+			    	callback: function () {
+						$.post('${base}/sys/role/deleterole.htm', $("#pageForm").serialize(), function(data) {
+							art.dialog.alert(data.message);
+							if (data.state) {
+								window.location.href = "${base}/sys/backend/rolelist.htm" ;
+							}
+						});
+					}
+			   }, {name: '取消',
+		        callback: function () {
+		            this .close();
+		       }
+		   }]
+		});
+	   }
+	}
+
+	function deleteSingle(sr_id) {
+			art.dialog({
+			    title: '提示！',
+			    resize: false,
+			    content: '点击确定后将执行删除角色操作！',
+			    width: '20em',
+			    button: [{
+			    	name:'确定',
+			    	callback: function () {
+						$.post('${base}/sys/role/deleterole.htm', {ids:sr_id}, function(data) {
+							art.dialog.alert(data.message);
+							if (data.state) {
+								window.location.href = "${base}/sys/backend/rolelist.htm" ;
+							}
+						});
+			    	} 
+			   }, {name: '取消',
+		        callback: function () {
+		            this .close();
+		       }
+		   }]
+		});
+	
+	}
+	
+	/**
+	 * 角色关联用户列表
+	 */
+	function toEdituser(id) {
+		window.location.href = "${base}/sys/role/roleuserlist.htm?srId="+id ;
+	}
+	
+	
+	function gotopage(pg) {
+		pageForm.pg.value = pg ;
+		pageForm.action = '${base}/sys/backend/rolelist.htm' ;
+		pageForm.submit() ;
+	}
+	function search() {
+		pageForm.pg.value = 1 ;
+		pageForm.action = '${base}/sys/backend/rolelist.htm' ;
+		pageForm.submit() ;
+	}
+	
+	function cleanSearch() {
+		pageForm.srName.value = '' ;
+		pageForm.srState.value = '' ;
+		pageForm.action = '${base}/sys/backend/rolelist.htm' ;
+		pageForm.submit() ;
+	}
+	</script>
+</head>
+<body>
+	<div class="container">
+
+		<div class="local_top">
+			<div class="site_path">
+				<i class="icon_w16 site">▪</i>
+				<a class="home" href="javascript:;">系统管理</a>
+				<span class="arr">&gt;</span>
+				<a href="javascript:;">系统角色管理</a>
+			</div>
+		</div>
+		<div class="local-name">
+			<h2 class="train">角色列表</h2>
+		</div>
+		<form id="pageForm" name="pageForm" method="post">
+			<div class="frm-mate">
+				<div class="fm-box">
+					<span class="lab">名称：</span>
+					<input class="tx-ipt-low" style="width: 88px;" type="text" name="srName" id="srName" value="${model.srName}" maxlength="40" />
+					<input type="hidden" name="pg" value="${pgBean.pg}" />
+					&nbsp;&nbsp;
+					 
+					<input type="hidden" name="maxResults" id="maxResults" value="${pgBean.maxResults}" />
+					<input class="query-btn" type="button" value="查询" onclick="search();" />
+					<input class="query-btn" type="button" value="清空" onclick="cleanSearch();" />
+				</div>
+				<div class="opi-btn">
+					<c:if test="${user_backend_permission_key.roleadd}">
+						<input class="nml-use-btn" type="button" value="新增角色" onclick="toAdd();" />
+					</c:if>
+					<c:if test="${user_backend_permission_key.roledelete}">
+						<input class="nml-use-btn" type="button" value="批量删除" onClick="javascript:deleteSelect();" />
+					</c:if>
+				</div>
+			</div>
+			<div class="tablelist">
+				<table class="data_tab op_data">
+					<tr>
+						<TH style="width: 20px;">
+							<input type="checkbox" name="checkall" value="" onClick="checkAll(this);">
+						</TH>
+						<TH>操作</TH>
+						<TH>角色名称</TH>
+						<TH>角色描述</TH>
+						<TH>创建时间</TH>
+						<TH>状态</TH>
+					</tr>
+					<c:forEach items="${list}" var="role">
+						<TR>
+							<TD width="20">
+								<input type="checkbox" name="ids" value="${role.srId}">
+							</TD>
+							<td class="ctr">
+								<input class="op-ico-btn view" type="button" value="查看" title="查看" onclick="viewRole(${role.srId})" />
+								<c:if test="${user_backend_permission_key.roleedit}">
+									<input class="op-ico-btn edit" type="button" value="编辑" title="编辑" onclick="toEdit(${role.srId})" />
+								</c:if>
+								<c:if test="${user_backend_permission_key.roledelete}">
+									<input class="op-ico-btn dele" type="button" value="删除" title="删除" onclick="deleteSingle(${role.srId})" />
+								</c:if>
+								<c:if test="${user_backend_permission_key.roleuserlink}">
+									<input class="op-ico-btn user" type="button" value="用户" title="设置用户" onclick="toEdituser(${role.srId})" />
+								</c:if>
+							</td>
+							<TD style="text-align: left;">
+								<a href="javascript:;" onclick="viewRole(${role.srId})">${role.srName}</a>
+							</TD>
+							<TD style="text-align: left;">${role.srDesc}</TD>
+							<TD>
+								<fmt:formatDate value="${role.srCtime}" pattern="yyyy-MM-dd HH:mm:ss" />
+							</TD>
+							<TD>
+							 
+							</TD>
+						</TR>
+					</c:forEach>
+				</table>
+			</div>
+		</form>
+
+		<%@include file="../../../common/backend.pager.inc.jsp"%>
+	</div>
+</body>
+
+</html>

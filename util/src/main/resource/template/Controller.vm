@@ -1,0 +1,110 @@
+package ${package_name}.controller;
+
+import edu.development.common.base.BaseController;
+import org.springframework.web.servlet.ModelAndView;
+import ${package_name}.model.${model};
+import ${package_name}.service.${model}Service;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * ${modelname}controller
+ * Created by dujianqiao on ${ctime}.
+ */
+@Controller
+@RequestMapping("/manage/${modelname}")
+public class ${model}Controller extends BaseController {
+
+    private static Logger logger = LoggerFactory.getLogger(${model}Controller.class);
+
+
+    @Autowired
+    private ${model}Service service ;
+    
+    /**
+     * 去列表 管理页面
+     * 
+     * @return
+     */
+    @RequestMapping("/index")
+    public ModelAndView index() {
+      logger.info(" list index");
+      ModelAndView mv = new ModelAndView("/${modelname}/index") ;
+      List<${model}> list  = service.selectByExample(null) ;
+      mv.addObject("list", list) ;
+      return mv ;
+    }
+    
+    /**
+     * 去新增页面
+     * 
+     * @return
+     */
+    @RequestMapping("/toAdd")
+    public ModelAndView toAdd() {
+      logger.info(" to add ");
+      ModelAndView mv = new ModelAndView("/${modelname}/toAdd");
+      return mv;
+    }
+    
+    
+    
+    /**
+     * 保存新增
+     * 
+     * @param model
+     * @return
+     */
+    @RequestMapping("/save")
+    public ModelAndView save(${model} model) {
+      ModelAndView mv = new ModelAndView("redirect:/index");
+      service.insert(model) ;
+      return mv ;
+    }
+    
+    
+    
+    /**
+     * 去编辑页面
+     * 
+     * @param id
+     * @return
+     */
+    @RequestMapping("/toEdit")
+    public ModelAndView toEdit(Long id) {
+      ModelAndView mv = new ModelAndView("/${modelname}/toEdit");
+      ${model} model =  service.selectByPrimaryKey(id) ;
+      mv.addObject("model", model) ;
+      return mv ;
+    }
+    
+    
+    /**
+     * 编辑信息
+     * @param model
+     * @return
+     */
+    @RequestMapping("/edit")
+    public ModelAndView edit(${model} model) {
+      ModelAndView mv = new ModelAndView("redirect:/index");
+      service.updateByPrimaryKey(model) ;
+      return mv ;
+    }
+    
+    /**
+    * 删除信息
+    * 
+    * @param id
+    * @return
+    */
+    public Map<String, Object> delete(Long id) {
+      BaseResult result  = new BaseResult() ;
+      service.deleteByPrimaryKey(id) ;
+      return result.modelMap() ;
+    }
+    
+}
