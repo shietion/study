@@ -17,19 +17,16 @@
  */
 package cn.edu.hfut.dmic.webcollector.fetcher;
 
-import cn.edu.hfut.dmic.webcollector.fetcher.SegmentWriter;
-import cn.edu.hfut.dmic.webcollector.model.CrawlDatum;
-import cn.edu.hfut.dmic.webcollector.util.BerkeleyDBUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sleepycat.je.Cursor;
-import com.sleepycat.je.CursorConfig;
 import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import cn.edu.hfut.dmic.webcollector.util.BerkeleyDBUtils;
 
 
 /**

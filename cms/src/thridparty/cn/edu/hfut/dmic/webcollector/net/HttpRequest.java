@@ -24,7 +24,6 @@ import java.net.Proxy;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
 
-import org.jsoup.Jsoup;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

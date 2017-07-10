@@ -34,6 +34,12 @@ import org.slf4j.LoggerFactory;
  * @author hu
  */
 public class Proxys extends ArrayList<Proxy> {
+    
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     public static final Logger LOG=LoggerFactory.getLogger(Proxys.class);
 
     public static Random random = new Random();
@@ -71,5 +77,6 @@ public class Proxys extends ArrayList<Proxy> {
                 this.add(line);
             }
         }
+        br.close();
     }
 }
