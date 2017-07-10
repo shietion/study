@@ -14,9 +14,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
 /**
  * AES加解密工具类
  * Created by dujianqiao on 2017/2/5.
@@ -61,7 +58,7 @@ public class AESUtil {
             //这里用Base64Encoder中会找不到包
             //解决办法：
             //在项目的Build path中先移除JRE System Library，再添加库JRE System Library，重新编译后就一切正常了。
-            String AES_encode = new String(new BASE64Encoder().encode(byte_AES));
+            String AES_encode = new String(Base64.encode(byte_AES, Base64.DEFAULT), "UTF-8");
             //11.将字符串返回
             return AES_encode;
         } catch (NoSuchAlgorithmException e) {
@@ -108,11 +105,10 @@ public class AESUtil {
             //7.初始化密码器，第一个参数为加密(Encrypt_mode)或者解密(Decrypt_mode)操作，第二个参数为使用的KEY
             cipher.init(Cipher.DECRYPT_MODE, key);
             //8.将加密并编码后的内容解码成字节数组
-            byte[] byte_content = new BASE64Decoder().decodeBuffer(content);
             /*
              * 解密
              */
-            byte[] byte_decode = cipher.doFinal(byte_content);
+            byte[] byte_decode = cipher.doFinal(Base64.decode(content.getBytes("UTF-8"), Base64.DEFAULT));
             String AES_decode = new String(byte_decode, "utf-8");
             return AES_decode;
         } catch (NoSuchAlgorithmException e) {
