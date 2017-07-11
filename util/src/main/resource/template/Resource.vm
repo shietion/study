@@ -1,0 +1,150 @@
+package ${package_name}.resource;
+
+import ${package_name}.model.${model};
+import ${package_name}.service.${model}Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.restlet.representation.Representation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.restlet.resource.Post;
+import org.restlet.resource.ServerResource;
+import java.util.List;
+import java.util.Map;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import com.zhihuisystem.cms.util.GlobConstant;
+import com.zhihuisystem.cms.util.JSONUtils;
+import com.zhihuisystem.cms.util.RepresentationModel;
+
+
+/**
+* ${model}Resource 业务处理
+* @author by dujianqiao on ${ctime}.
+* @version 1.1
+* <b>DATE:</b> ${ctime}.
+*/
+
+public class ${model}Resource extends ServerResource {
+
+    private static Logger logger = LoggerFactory.getLogger(${model}Resource.class);
+
+
+    @Autowired
+    private ${model}Service service ;
+    
+    public static final String OPERATION_ADD = "add";
+
+	public static final String OPERATION_DEL = "delete";
+
+	public static final String OPERATION_UPDATE = "update";
+
+	public static final String OPERATION_SEL = "query";
+
+	public static final String OPERATION_FLAG = "operation";
+	
+    @Post
+    public Representation post(String entity) {
+	JSONObject param = JSONUtils.parseJSON(entity);
+	String operation = param.optString(OPERATION_FLAG);
+	String requestCode = param.optString("requestCode");
+	JSONArray datas = param.optJSONArray("data");
+	RepresentationModel model = new RepresentationModel();
+	JSONObject requestParam = new JSONObject();
+	logger.info("operation =====================" + operation);
+	if (null == operation || "".equals(operation)) {
+	    model.setMessage(GlobConstant.MESSAGE_PARAM_FAILD);
+	    model.setStatus(GlobConstant.STATUS_PARAM);
+
+	    requestParam.put("requestCode", requestCode);
+	    requestParam.put("data", "{}");
+	    model.add("requestParam", requestParam);
+	    model.add("results", datas);
+	    return model.repPresent();
+	}
+
+	if (operation.equals(OPERATION_ADD)) {
+	    return add(param);
+	}
+	if (operation.equals(OPERATION_DEL)) {
+	    return delete(param);
+	}
+	if (operation.equals(OPERATION_UPDATE)) {
+	    return update(param);
+	}
+	if (operation.equals(OPERATION_SEL)) {
+	    return query(param);
+	}
+
+	return query(param);
+    }
+
+    private Representation query(JSONObject param) {
+	String requestCode = param.optString("requestCode");
+	RepresentationModel model = new RepresentationModel();
+	JSONObject requestParam = new JSONObject();
+
+	requestParam.put("requestCode", requestCode);
+	model.add("data", "{}");
+	model.add("requestParam", requestParam);
+	JSONObject conditions = param.optJSONObject("conditions");
+	List<Map<String, Object>> result = service.queryByConditions(conditions);
+	model.add("results", result);
+	return model.repPresent();
+    }
+
+    private Representation update(JSONObject param) {
+	String requestCode = param.optString("requestCode");
+	RepresentationModel model = new RepresentationModel();
+	JSONObject requestParam = new JSONObject();
+
+	requestParam.put("requestCode", requestCode);
+	requestParam.put("data", "{}");
+	model.add("requestParam", requestParam);
+	JSONArray data = param.optJSONArray("data");
+	boolean flag = service.updateArray(data) ;
+	if (!flag) {
+		model.setMessage(GlobConstant.MESSAGE_FAILD);
+		model.setStatus(GlobConstant.STATUS_DATABASE);
+	}
+
+	model.add("results", data);
+	return model.repPresent() ;
+    }
+
+    private Representation delete(JSONObject param) {
+	String requestCode = param.optString("requestCode");
+	RepresentationModel model = new RepresentationModel();
+	JSONObject requestParam = new JSONObject();
+
+	requestParam.put("requestCode", requestCode);
+	requestParam.put("data", "{}");
+	model.add("requestParam", requestParam);
+	JSONArray data = param.optJSONArray("data");
+	boolean flag = service.deleteArray(data);
+	if(!flag) {
+		model.setMessage(GlobConstant.MESSAGE_FAILD);
+		model.setStatus(GlobConstant.STATUS_DATABASE);
+	}
+	model.add("results", data);
+	return model.repPresent() ;
+    }
+
+    private Representation add(JSONObject param) {
+	String requestCode = param.optString("requestCode");
+	RepresentationModel model = new RepresentationModel();
+	JSONObject requestParam = new JSONObject();
+
+	requestParam.put("requestCode", requestCode);
+	requestParam.put("data", "{}");
+	model.add("requestParam", requestParam);
+	JSONArray data = param.optJSONArray("data");
+	boolean flag = service.addArray(data);
+	if(!flag) {
+		model.setMessage(GlobConstant.MESSAGE_FAILD);
+		model.setStatus(GlobConstant.STATUS_DATABASE);
+	}
+	model.add("results", data);
+	return model.repPresent() ;
+    }
+    
+}
