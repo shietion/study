@@ -21,8 +21,8 @@
 		window.location.href = "${base}/manage/${modelname}/toEdit.htm?id="+id  ;
 	}
 
-	function viewRole(srId){
-		window.location.href = "${base}/sys/role/roleview/"+srId+".htm" ;
+	function toView(srId){
+		window.location.href = "${base}/manage/${modelname}/view/"+srId+".htm" ;
 	}
 	
 	function deleteSelect() {
