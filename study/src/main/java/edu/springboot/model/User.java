@@ -1,4 +1,4 @@
-package edu.springboot.mapper;
+package edu.springboot.model;
 
 public class User {
 
